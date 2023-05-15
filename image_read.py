@@ -7,6 +7,7 @@ image_name = "sudoku.jpg"
 myconfig = r"--psm 6 --oem 3"
 text = pytesseract.image_to_string(PIL.Image.open(image_name), config = myconfig)
 print(text)
+print(text)
 
 
 img = cv2.imread(image_name)
