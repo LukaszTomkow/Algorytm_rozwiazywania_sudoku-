@@ -44,7 +44,7 @@ sudoku_grid = thresh[y:y+h, x:x+w]
 cells = extract_sudoku_cells(sudoku_grid)
 
 # Ustawienia Tesseract
-myconfig = r"--psm 6 --oem 3"
+myconfig = r"--psm 9 --oem 3"# -c tessedit_char_whitelist=123456789"
 
 # Przetwarzanie komórek i wykonywanie OCR
 extracted_text = []
