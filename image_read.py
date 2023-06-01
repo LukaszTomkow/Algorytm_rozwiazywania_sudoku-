@@ -9,7 +9,11 @@ def extract_sudoku_cells(sudoku_grid):
     cells = []
     for row in range(9):
         for col in range(9):
-            cell = sudoku_grid[row*cell_height:(row+1)*cell_height, col*cell_width:(col+1)*cell_width]
+            cell_y = row * cell_height + cell_height // 9
+            cell_x = col * cell_width + cell_width // 9
+            cell_h = cell_height - cell_height // 9
+            cell_w = cell_width - cell_width // 9
+            cell = sudoku_grid[cell_y:cell_y+cell_h, cell_x:cell_x+cell_w]
             cells.append(cell)
     return cells
 
@@ -44,18 +48,18 @@ sudoku_grid = thresh[y:y+h, x:x+w]
 cells = extract_sudoku_cells(sudoku_grid)
 
 # Ustawienia Tesseract
-myconfig = r"--psm 9 --oem 3"# -c tessedit_char_whitelist=123456789"
+myconfig = r"--psm 9 --oem 3"
 
 # Przetwarzanie komórek i wykonywanie OCR
 extracted_text = []
+
 for cell in cells:
 
     cv2.imshow("Digit", cell)
-    cv2.waitKey(0)
-
+    cv2.waitKey(1)
+    
     digit = preprocess_digit(cell)
     text = pytesseract.image_to_string(PIL.Image.fromarray(digit), config=myconfig)
-    print(text)
     extracted_text.append(text.strip())
 
 # Przekształcenie tekstu
