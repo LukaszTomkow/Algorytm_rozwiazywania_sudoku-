@@ -18,14 +18,16 @@ def extract_sudoku_cells(sudoku_grid):
     return cells
 
 def preprocess_digit(digit):
+    # Zwiększenie kontrastu
+    equalized = cv2.equalizeHist(digit)
+
+    # Wygładzanie
+    blurred = cv2.medianBlur(equalized, 3)
+
     # Progowanie adaptacyjne
-    thresh = cv2.adaptiveThreshold(digit, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+    thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
-    # Wyostrzenie krawędzi
-    kernel = np.array([[0, -1, 0], [-1, 5,-1], [0, -1, 0]], dtype=np.float32)
-    sharpened = cv2.filter2D(thresh, -1, kernel)
-
-    return sharpened
+    return thresh
 
 image_name = "przechwytywanie.png"
 
@@ -48,18 +50,17 @@ sudoku_grid = thresh[y:y+h, x:x+w]
 cells = extract_sudoku_cells(sudoku_grid)
 
 # Ustawienia Tesseract
-myconfig = r"--psm 9 --oem 3"
+myconfig = r"--psm 10 --oem 3 -c tessedit_char_whitelist=123456789"
 
 # Przetwarzanie komórek i wykonywanie OCR
 extracted_text = []
 
 for cell in cells:
-
-    cv2.imshow("Digit", cell)
-    cv2.waitKey(1)
-    
     digit = preprocess_digit(cell)
     text = pytesseract.image_to_string(PIL.Image.fromarray(digit), config=myconfig)
+    #print(text)
+    #cv2.imshow("Digit", cell)
+    #cv2.waitKey(1)
     extracted_text.append(text.strip())
 
 # Przekształcenie tekstu
