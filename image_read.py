@@ -39,29 +39,33 @@ sudoku_grid = thresh[y:y+h, x:x+w]
 cells = extract_sudoku_cells(sudoku_grid)
 
 # Ustawienia Tesseract
-myconfig = r"--psm 10 --oem 3 "#-c tessedit_char_whitelist=123456789"
+#myconfig = r"--psm 10 digits --oem 3 -c tessedit_char_whitelist=123456789"
+myconfig = r"--psm 10 digits --oem 3"# -c tessedit_char_whitelist=123456789"
 
 # Przetwarzanie komórek i wykonywanie OCR
 extracted_text = []
 
 for cell in cells:
     text = pytesseract.image_to_string(PIL.Image.fromarray(cell), config=myconfig)
-    print(text)
-    cv2.imshow("Digit", cell)
-    cv2.waitKey(1)
-    extracted_text.append(text.strip())
+    #print(text)
+    #cv2.imshow("Digit", cell)
+    #cv2.waitKey(1)
+    if text.strip().isdigit():
+        extracted_text.append(int(text.strip()))
+    else:
+        extracted_text.append("")
 
 # Przekształcenie tekstu
-processed_text = ''
-for text in extracted_text:
-    if text.isdigit():
-        processed_text += text
-    else:
-        processed_text += ' '
+#processed_text = ''
+#for text in extracted_text:
+#    if text.isdigit():
+#        processed_text += text
+#    else:
+#        processed_text += ' '
 
 # Sprawdzenie, czy otrzymany tekst składa się z 81 cyfr
-if len(processed_text) == 81:
-    sudoku_board = np.array([int(digit) if digit.isdigit() else 0 for digit in processed_text]).reshape((9, 9))
+if len(extracted_text) == 81:
+    sudoku_board = np.array([ "" if isinstance(digit, str) else int(digit) for digit in extracted_text]).reshape((9, 9))
     print(sudoku_board)
 else:
     print("Błąd: Nieprawidłowa liczba cyfr Sudoku")
