@@ -20,13 +20,13 @@ def extract_sudoku_cells(sudoku_grid):
 
 image_name = "przechwytywanie.png"
 
-# Przygotowanie obrazka
+# Image preparation
 img = cv2.imread(image_name)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blurred = cv2.GaussianBlur(img, (3, 3), 0)
 thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
 
-# Wyodrębnienie siatki Sudoku
+# defining grid
 edges = cv2.Canny(thresh, 50, 150)
 contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 contour = max(contours, key=cv2.contourArea)
@@ -35,15 +35,11 @@ approx = cv2.approxPolyDP(contour, epsilon, True)
 x, y, w, h = cv2.boundingRect(approx)
 sudoku_grid = thresh[y:y+h, x:x+w]
 
-# Wyodrębnienie komórek Sudoku
-cells = extract_sudoku_cells(sudoku_grid)
-
-# Ustawienia Tesseract
-#myconfig = r"--psm 10 digits --oem 3 -c tessedit_char_whitelist=123456789"
-myconfig = r"--psm 10 digits --oem 3"# -c tessedit_char_whitelist=123456789"
-
 # Przetwarzanie komórek i wykonywanie OCR
+myconfig = r"--psm 10 digits --oem 3"# -c tessedit_char_whitelist=123456789"        #tesseract config
+
 extracted_text = []
+cells = extract_sudoku_cells(sudoku_grid)
 
 for cell in cells:
     text = pytesseract.image_to_string(PIL.Image.fromarray(cell), config=myconfig)
@@ -55,17 +51,16 @@ for cell in cells:
     else:
         extracted_text.append("")
 
-# Przekształcenie tekstu
-#processed_text = ''
-#for text in extracted_text:
-#    if text.isdigit():
-#        processed_text += text
-#    else:
-#        processed_text += ' '
+#split list
+def split(list):
+    for i in range(0,len(list),9 ):
+        yield list[i:i+9]
 
-# Sprawdzenie, czy otrzymany tekst składa się z 81 cyfr
+# checking if text is 81 characters
 if len(extracted_text) == 81:
-    sudoku_board = np.array([ "" if isinstance(digit, str) else int(digit) for digit in extracted_text]).reshape((9, 9))
-    print(sudoku_board)
+    #print(extracted_text)
+    #sudoku_board_text = np.array([ '' if isinstance(digit, str) else int(digit) for digit in extracted_text]).reshape((9, 9))
+    sudoku_board = list(split(extracted_text))
+    
 else:
     print("Błąd: Nieprawidłowa liczba cyfr Sudoku")
