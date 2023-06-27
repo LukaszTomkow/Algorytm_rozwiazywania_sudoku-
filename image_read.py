@@ -35,7 +35,7 @@ approx = cv2.approxPolyDP(contour, epsilon, True)
 x, y, w, h = cv2.boundingRect(approx)
 sudoku_grid = thresh[y:y+h, x:x+w]
 
-# Przetwarzanie komórek i wykonywanie OCR
+# extracting cells and ocr processing
 myconfig = r"--psm 10 digits --oem 3"# -c tessedit_char_whitelist=123456789"        #tesseract config
 
 extracted_text = []
@@ -63,4 +63,4 @@ if len(extracted_text) == 81:
     sudoku_board = list(split(extracted_text))
     
 else:
-    print("Błąd: Nieprawidłowa liczba cyfr Sudoku")
+    print("Error: Incorrect reading resoult. Please check if image is clean and contains sudku grid ")

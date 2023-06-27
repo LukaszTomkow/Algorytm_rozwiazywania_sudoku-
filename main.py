@@ -1,6 +1,7 @@
 from image_read import sudoku_board
 
 board = sudoku_board
+
 #board = [
 #    [7,9,3,5,2,'','',6,''],
 #    [4,6,'',9,'','','',8,5],
@@ -14,7 +15,7 @@ board = sudoku_board
 #]
 
 
-
+#solver
 def solve(bo):
     find = find_empty(bo)
     if not find:
@@ -33,7 +34,7 @@ def solve(bo):
 
     return False
 
-
+#checking if number is valid for sudoku
 def valid(bo, num, pos):
     # Check row
     for i in range(len(bo[0])):
@@ -57,6 +58,7 @@ def valid(bo, num, pos):
     return True
 
 
+#prearing sudoku representaton
 def print_board(bo):
     for i in range(len(bo)):
         if i % 3 == 0 and i != 0:
@@ -71,7 +73,7 @@ def print_board(bo):
             else:
                 print(str(bo[i][j]) + " ", end="")
 
-
+#finging positions of empty cells
 def find_empty(bo):
     for i in range(len(bo)):
         for j in range(len(bo[0])):
